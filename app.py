@@ -161,95 +161,124 @@ def reset():
     return jsonify({"success": True, "stats": get_stats(), "slots": list(parking_slots.values())})
 
 
-def console_reader():
+def _enter():
+    """Simulate vehicle entry."""
+    global entered_today, entry_gate_open
+    free_slots = [i for i, s in parking_slots.items() if s["status"] == "empty"]
+    if not free_slots:
+        print("  [Error] Parking full — entry denied")
+        add_log("sys", "[Console] Entry attempted but parking is full")
+        return False
+    slot_idx = free_slots[0]
+    parking_slots[slot_idx]["status"] = "filled"
+    entered_today += 1
+    entry_gate_open = True
+    add_log("enter", f"[Console] Vehicle entered — Slot {slot_idx + 1} allocated")
+    print(f"  [Success] Vehicle entered — Slot {slot_idx + 1} allocated")
+    return True
+
+
+def _exit():
+    """Simulate vehicle exit."""
+    global exited_today, exit_gate_open
+    filled_slots = [i for i, s in parking_slots.items() if s["status"] == "filled"]
+    if not filled_slots:
+        print("  [Error] No vehicles to exit")
+        add_log("sys", "[Console] Exit attempted but parking is empty")
+        return False
+    slot_idx = filled_slots[0]
+    parking_slots[slot_idx]["status"] = "empty"
+    exited_today += 1
+    exit_gate_open = True
+    add_log("exit", f"[Console] Vehicle exited — Slot {slot_idx + 1} freed")
+    print(f"  [Success] Vehicle exited — Slot {slot_idx + 1} freed")
+    return True
+
+
+def _toggle(slot_id):
+    """Toggle slot occupancy (e.g. toggle(5))."""
+    idx = slot_id - 1
+    if idx < 0 or idx >= TOTAL_SLOTS:
+        print(f"  [Error] Invalid slot {slot_id}")
+        return False
+    prev = parking_slots[idx]["status"]
+    parking_slots[idx]["status"] = "empty" if prev == "filled" else "filled"
+    add_log("sys", f"[Console] Slot {slot_id} manually set to {parking_slots[idx]['status']}")
+    print(f"  [Success] Slot {slot_id} set to {parking_slots[idx]['status']}")
+    return True
+
+
+def _reset():
+    """Reset parking state."""
     global entered_today, exited_today, entry_gate_open, exit_gate_open
-    
-    # Give the server a moment to start up and print its messages
-    import time
-    time.sleep(1.5)
-    
-    print("\n" + "*"*50)
-    print("  Console Input Simulation Active!")
-    print("  Available commands:")
-    print("    enter         : Simulate vehicle entry")
-    print("    exit          : Simulate vehicle exit")
-    print("    toggle <id>   : Toggle slot occupancy (e.g. toggle 5)")
-    print("    reset         : Reset parking state")
-    print("*"*50 + "\n")
-    
-    while True:
+    for i in range(TOTAL_SLOTS):
+        parking_slots[i]["status"] = "empty"
+    entered_today = 0
+    exited_today  = 0
+    entry_gate_open = False
+    exit_gate_open  = False
+    vehicle_log.clear()
+    add_log("sys", "[Console] System reset")
+    print("  [Success] System reset successfully")
+    return True
+
+
+class ShellCommand:
+    def __init__(self, func, name):
+        self.func = func
+        self.name = name
+    def __repr__(self):
+        return f"<Command: {self.name}>"
+
+
+class ToggleCommand:
+    def __repr__(self):
+        return "<Command: toggle>"
+
+
+# Expose commands as objects
+enter = ShellCommand(_enter, "enter")
+exit = ShellCommand(_exit, "exit")
+reset = ShellCommand(_reset, "reset")
+toggle = ToggleCommand()
+
+
+# Custom displayhook to capture interactive evaluation (avoids autocompletion triggers)
+original_displayhook = sys.displayhook
+
+def custom_displayhook(value):
+    if isinstance(value, ShellCommand):
+        value.func()
+    elif isinstance(value, ToggleCommand):
         try:
-            # sys.stdout.write("ParkingCMD> ")
-            # sys.stdout.flush()
-            cmd = input("ParkingCMD> ").strip().lower()
-            if not cmd:
-                continue
-            if cmd == "enter":
-                free_slots = [i for i, s in parking_slots.items() if s["status"] == "empty"]
-                if not free_slots:
-                    print("  [Console Error] Parking full — entry denied")
-                    add_log("sys", "[Console] Entry attempted but parking is full")
-                    continue
-                slot_idx = free_slots[0]
-                parking_slots[slot_idx]["status"] = "filled"
-                entered_today += 1
-                entry_gate_open = True
-                add_log("enter", f"[Console] Vehicle entered — Slot {slot_idx + 1} allocated")
-                print(f"  [Success] Vehicle entered — Slot {slot_idx + 1} allocated")
-            elif cmd == "exit":
-                filled_slots = [i for i, s in parking_slots.items() if s["status"] == "filled"]
-                if not filled_slots:
-                    print("  [Console Error] No vehicles to exit")
-                    add_log("sys", "[Console] Exit attempted but parking is empty")
-                    continue
-                slot_idx = filled_slots[0]
-                parking_slots[slot_idx]["status"] = "empty"
-                exited_today += 1
-                exit_gate_open = True
-                add_log("exit", f"[Console] Vehicle exited — Slot {slot_idx + 1} freed")
-                print(f"  [Success] Vehicle exited — Slot {slot_idx + 1} freed")
-            elif cmd.startswith("toggle"):
-                parts = cmd.split()
-                if len(parts) < 2:
-                    print("  [Console Error] Please specify slot number. Usage: toggle <slot_id>")
-                    continue
-                try:
-                    slot_id = int(parts[1])
-                    idx = slot_id - 1
-                    if idx < 0 or idx >= TOTAL_SLOTS:
-                        print(f"  [Console Error] Invalid slot {slot_id}")
-                        continue
-                    prev = parking_slots[idx]["status"]
-                    parking_slots[idx]["status"] = "empty" if prev == "filled" else "filled"
-                    add_log("sys", f"[Console] Slot {slot_id} manually set to {parking_slots[idx]['status']}")
-                    print(f"  [Success] Slot {slot_id} set to {parking_slots[idx]['status']}")
-                except ValueError:
-                    print("  [Console Error] Invalid slot number")
-            elif cmd == "reset":
-                for i in range(TOTAL_SLOTS):
-                    parking_slots[i]["status"] = "empty"
-                entered_today = 0
-                exited_today  = 0
-                entry_gate_open = False
-                exit_gate_open  = False
-                vehicle_log.clear()
-                add_log("sys", "[Console] System reset")
-                print("  [Success] System reset successfully")
-            else:
-                print("  [Console Error] Unknown command. Commands: enter, exit, toggle <id>, reset")
+            slot_str = input("  Enter slot ID to toggle: ").strip()
+            if slot_str:
+                _toggle(int(slot_str))
         except Exception as e:
-            print(f"  [Console Error] {e}")
+            print(f"  [Error] {e}")
+    else:
+        original_displayhook(value)
+
+sys.displayhook = custom_displayhook
+
 
 
 if __name__ == "__main__":
     add_log("sys", "Smart Parking System started — 40 slots loaded")
     print("\n" + "="*50)
-    print("  Smart Parking System")
+    print("  Smart Parking System Running!")
     print("  http://127.0.0.1:5005")
+    print("  ")
+    print("  Type any of these commands directly in the shell (no parentheses needed!):")
+    print("    enter       - Simulate vehicle entry")
+    print("    exit        - Simulate vehicle exit")
+    print("    toggle      - Toggle slot occupancy (prompts for slot ID)")
+    print("    reset       - Reset parking state")
     print("="*50 + "\n")
     
-    # Start console input reader thread
-    t = threading.Thread(target=console_reader, daemon=True)
-    t.start()
-    
-    app.run(debug=True, use_reloader=False, port=5005)
+    # Start Flask server in a daemon thread so shell remains interactive
+    flask_thread = threading.Thread(
+        target=lambda: app.run(debug=False, use_reloader=False, port=5005), 
+        daemon=True
+    )
+    flask_thread.start()
