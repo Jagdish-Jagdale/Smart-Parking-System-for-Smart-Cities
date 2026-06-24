@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Smart Parking System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/style.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+</head>
+<body>
+  <!-- ── HEADER & NAVIGATION ── -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <i class="fa-solid fa-square-parking logo-icon"></i>
+      <div>
+        <h1>Smart Parking System</h1>
+        <span class="subtitle">IoT Monitoring & Management</span>
+      </div>
+    </div>
+
+    <nav class="nav-links">
+      <button class="nav-btn active" onclick="switchPage('home')">
+        <i class="fa-solid fa-house"></i> Home
+      </button>
+      <button class="nav-btn" onclick="switchPage('dashboard')">
+        <i class="fa-solid fa-square-parking"></i> Parking Check
+      </button>
+      <button class="nav-btn" onclick="switchPage('about')">
+        <i class="fa-solid fa-circle-info"></i> About
+      </button>
+    </nav>
+
+    <div class="topbar-right">
+      <span class="badge-live"><span class="pulse"></span> Live</span>
+      <span id="clock" class="clock">--:--:--</span>
+    </div>
+  </header>
+
+  <main>
+    <!-- ── PAGE 1: HOME ── -->
+    <section id="page-home" class="page-section active">
+      <!-- Hero Banner -->
+      <div class="hero-card">
+        <div class="hero-content">
+          <div class="hero-badge">
+            <i class="fa-solid fa-bolt"></i> Real-Time IoT System
+          </div>
+          <h2 class="hero-title">Automate & Monitor <br>Your <span>Smart Parking</span></h2>
+          <p class="hero-desc">
+            A state-of-the-art parking management dashboard powered by IoT simulation. Live slot tracking, animated entry/exit barriers, live statistics, and detailed log reports are all available at your fingertips.
+          </p>
+          <button class="hero-cta" onclick="switchPage('dashboard')">
+            Check Parking slots <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>
+        <div class="hero-image">
+          <i class="fa-solid fa-square-parking"></i>
+        </div>
+      </div>
+
+      <!-- Quick Metrics Overview -->
+      <div class="quick-stats-bar">
+        <div class="quick-stat-card card-blue">
+          <div class="q-icon"><i class="fa-solid fa-layer-group"></i></div>
+          <div class="q-info">
+            <span class="quick-stat-lbl">Total Capacity</span>
+            <span class="quick-stat-val" id="qs-total">40</span>
+          </div>
+        </div>
+        <div class="quick-stat-card card-green">
+          <div class="q-icon"><i class="fa-solid fa-circle-check"></i></div>
+          <div class="q-info">
+            <span class="quick-stat-lbl">Available Now</span>
+            <span class="quick-stat-val" id="qs-avail">–</span>
+          </div>
+        </div>
+        <div class="quick-stat-card card-red">
+          <div class="q-icon"><i class="fa-solid fa-car"></i></div>
+          <div class="q-info">
+            <span class="quick-stat-lbl">Occupied Slots</span>
+            <span class="quick-stat-val" id="qs-occ">–</span>
+          </div>
+        </div>
+        <div class="quick-stat-card card-amber">
+          <div class="q-icon"><i class="fa-solid fa-right-to-bracket"></i></div>
+          <div class="q-info">
+            <span class="quick-stat-lbl">Entries Today</span>
+            <span class="quick-stat-val" id="qs-entered">–</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Features Grid -->
+      <div class="features-grid">
+        <div class="feature-box">
+          <div class="feature-icon"><i class="fa-solid fa-th"></i></div>
+          <h3 class="feature-title">Live Slot Grid</h3>
+          <p class="feature-desc">Monitor the occupancy status of every individual slot in real-time. Click slots to toggle states and simulate sensor triggers.</p>
+        </div>
+        <div class="feature-box">
+          <div class="feature-icon"><i class="fa-solid fa-traffic-light"></i></div>
+          <h3 class="feature-title">Barrier Gates</h3>
+          <p class="feature-desc">Automated gate barrier system simulates entrance and exit mechanics with beautiful micro-animations when a vehicle arrives or leaves.</p>
+        </div>
+        <div class="feature-box">
+          <div class="feature-icon"><i class="fa-solid fa-chart-pie"></i></div>
+          <h3 class="feature-title">Smart Analytics</h3>
+          <p class="feature-desc">Interactive occupancy distribution pie charts, bar progress meters, and dynamic counter metrics update live as events unfold.</p>
+        </div>
+      </div>
+
+      <!-- Live Status & Quick Actions -->
+      <div class="home-simulation-section">
+        <div class="home-sim-card">
+          <div class="home-sim-header">
+            <h3><i class="fa-solid fa-bolt"></i> Live Simulation Console</h3>
+            <span class="badge-live"><span class="pulse"></span> Active</span>
+          </div>
+          <p class="home-sim-desc">Simulate sensor triggers and vehicle entry/exit events directly from the home page. The counters and status will update instantly.</p>
+          <div class="home-sim-actions">
+            <button class="btn btn-green" onclick="triggerEntry()">
+              <i class="fa-solid fa-car"></i> Simulate Entry
+            </button>
+            <button class="btn btn-red" onclick="triggerExit()">
+              <i class="fa-solid fa-person-walking-arrow-right"></i> Simulate Exit
+            </button>
+            <button class="btn btn-outline" onclick="simulateRandom()">
+              <i class="fa-solid fa-bolt"></i> IoT Auto-Simulate
+            </button>
+            <button class="btn btn-outline" onclick="resetSystem()">
+              <i class="fa-solid fa-rotate"></i> Reset State
+            </button>
+          </div>
+        </div>
+        
+        <div class="home-log-card">
+          <div class="home-log-header">
+            <h3><i class="fa-solid fa-list-ul"></i> Live Activity Feed</h3>
+          </div>
+          <div class="log-panel" id="home-log-panel">
+            <div class="log-placeholder">Waiting for activity logs...</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── PAGE 2: PARKING CHECK (DASHBOARD) ── -->
+    <section id="page-dashboard" class="page-section">
+      <!-- METRIC CARDS -->
+      <section class="metrics-row">
+        <div class="metric-card">
+          <div class="metric-icon blue"><i class="fa-solid fa-layer-group"></i></div>
+          <div>
+            <div class="metric-label">Total Slots</div>
+            <div class="metric-value" id="m-total">40</div>
+          </div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon green"><i class="fa-solid fa-circle-check"></i></div>
+          <div>
+            <div class="metric-label">Available</div>
+            <div class="metric-value green" id="m-avail">–</div>
+          </div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon red"><i class="fa-solid fa-car"></i></div>
+          <div>
+            <div class="metric-label">Occupied</div>
+            <div class="metric-value red" id="m-occ">–</div>
+          </div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon amber"><i class="fa-solid fa-right-to-bracket"></i></div>
+          <div>
+            <div class="metric-label">Entered Today</div>
+            <div class="metric-value amber" id="m-entered">–</div>
+          </div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon purple"><i class="fa-solid fa-right-from-bracket"></i></div>
+          <div>
+            <div class="metric-label">Exited Today</div>
+            <div class="metric-value purple" id="m-exited">–</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- OCCUPANCY BAR -->
+      <section class="card occ-section">
+        <div class="card-header">
+          <span><i class="fa-solid fa-chart-simple"></i> Occupancy</span>
+          <span id="occ-pct-label" class="badge">0%</span>
+        </div>
+        <div class="occ-bar">
+          <div class="occ-fill" id="occ-fill"></div>
+        </div>
+        <div class="occ-labels">
+          <span>0%</span><span>25%</span><span>50%</span><span>75%</span><span>100%</span>
+        </div>
+      </section>
+
+      <!-- GATES + DISPLAY BOARD -->
+      <div class="two-col">
+        <!-- Gates -->
+        <section class="card">
+          <div class="card-header"><span><i class="fa-solid fa-traffic-light"></i> Gate Control</span></div>
+          <div class="gates-row">
+            <div class="gate-panel">
+              <div class="gate-label"><i class="fa-solid fa-arrow-right"></i> Entry Gate</div>
+              <div class="gate-visual" id="entry-visual">
+                <div class="road-line"></div>
+                <div class="barrier-arm" id="entry-arm"></div>
+                <div class="gate-pillar left"></div>
+                <div class="gate-pillar right"></div>
+              </div>
+              <div class="gate-status" id="entry-status">
+                <span class="dot closed"></span> Closed
+              </div>
+              <button class="btn btn-green" onclick="triggerEntry()">
+                <i class="fa-solid fa-car"></i> Vehicle Entry
+              </button>
+            </div>
+            <div class="gate-divider"></div>
+            <div class="gate-panel">
+              <div class="gate-label"><i class="fa-solid fa-arrow-left"></i> Exit Gate</div>
+              <div class="gate-visual" id="exit-visual">
+                <div class="road-line"></div>
+                <div class="barrier-arm exit-arm" id="exit-arm"></div>
+                <div class="gate-pillar left"></div>
+                <div class="gate-pillar right"></div>
+              </div>
+              <div class="gate-status" id="exit-status">
+                <span class="dot closed"></span> Closed
+              </div>
+              <button class="btn btn-red" onclick="triggerExit()">
+                <i class="fa-solid fa-person-walking-arrow-right"></i> Vehicle Exit
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Display Board -->
+        <section class="card">
+          <div class="card-header"><span><i class="fa-solid fa-display"></i> Entry Display Board</span></div>
+          <div class="display-board">
+            <div class="board-title">▶ CITY CENTRE PARKING</div>
+            <div class="board-row"><span class="bl">Capacity</span><span class="bv" id="dp-total">40 SLOTS</span></div>
+            <div class="board-row"><span class="bl">Available</span><span class="bv green" id="dp-avail">– FREE</span></div>
+            <div class="board-row"><span class="bl">Occupied</span><span class="bv red" id="dp-occ">– TAKEN</span></div>
+            <div class="board-divider"></div>
+            <div class="board-status" id="dp-status">OPEN</div>
+          </div>
+          <!-- Controls -->
+          <div class="action-row" style="margin-top:1.25rem;">
+            <button class="btn btn-outline" onclick="simulateRandom()">
+              <i class="fa-solid fa-bolt"></i> IoT Simulate
+            </button>
+            <button class="btn btn-outline" onclick="resetSystem()">
+              <i class="fa-solid fa-rotate"></i> Reset System
+            </button>
+          </div>
+        </section>
+      </div>
+
+      <!-- SLOTS GRID -->
+      <section class="card">
+        <div class="card-header">
+          <span><i class="fa-solid fa-th"></i> Parking Slots — Click to toggle</span>
+          <div class="legend">
+            <span class="legend-item"><span class="lbox empty"></span> Available</span>
+            <span class="legend-item"><span class="lbox filled"></span> Occupied</span>
+          </div>
+        </div>
+        <div class="slots-grid" id="slots-grid"></div>
+      </section>
+
+      <!-- LOG + CHART -->
+      <div class="two-col">
+        <section class="card log-card">
+          <div class="card-header"><span><i class="fa-solid fa-list-ul"></i> Activity Log</span></div>
+          <div class="log-panel" id="log-panel">
+            <div class="log-placeholder">No activity yet.</div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-header"><span><i class="fa-solid fa-chart-pie"></i> Live Stats</span></div>
+          <canvas id="pieChart" width="220" height="220" style="display:block;margin:0 auto;"></canvas>
+          <div class="chart-legend" id="chart-legend"></div>
+        </section>
+      </div>
+    </section>
+
+    <!-- ── PAGE 3: ABOUT ── -->
+    <section id="page-about" class="page-section">
+      <div class="about-container">
+        <div class="about-section">
+          <div class="about-card">
+            <h2><i class="fa-solid fa-rocket"></i> Project Purpose</h2>
+            <p class="about-text">
+              The Smart Parking System aims to solve urban parking availability issues by demonstrating how IoT sensors can interface with dynamic web applications. Real-time updates help reduce driver frustration, carbon emissions, and parking congestion.
+            </p>
+            <p class="about-text">
+              By utilizing simulated sensor events, this dashboard provides a visualization of how smart cities leverage REST APIs to monitor infrastructure state and display instant metrics on roadside signs.
+            </p>
+          </div>
+
+          <div class="about-card">
+            <h2><i class="fa-solid fa-cubes"></i> Technology Stack</h2>
+            <div class="tech-stack-list">
+              <div class="tech-item">
+                <i class="fa-brands fa-python tech-item-icon"></i>
+                <div>
+                  <div class="tech-item-title">Python Flask</div>
+                  <div class="tech-item-desc">A micro-framework powering the REST API and state management.</div>
+                </div>
+              </div>
+              <div class="tech-item">
+                <i class="fa-brands fa-js tech-item-icon"></i>
+                <div>
+                  <div class="tech-item-title">Vanilla JS</div>
+                  <div class="tech-item-desc">Handles page routing, canvas rendering, dynamic grid building, and API polling.</div>
+                </div>
+              </div>
+              <div class="tech-item">
+                <i class="fa-brands fa-css3-alt tech-item-icon"></i>
+                <div>
+                  <div class="tech-item-title">Vanilla CSS</div>
+                  <div class="tech-item-desc">Responsive layouts, custom grid structures, and smooth interactive animations.</div>
+                </div>
+              </div>
+              <div class="tech-item">
+                <i class="fa-solid fa-gauge-high tech-item-icon"></i>
+                <div>
+                  <div class="tech-item-title">IoT Simulation</div>
+                  <div class="tech-item-desc">Mock server-side events and client actions that simulate physical sensors.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="architecture-card">
+          <h2><i class="fa-solid fa-sitemap"></i> System Architecture</h2>
+          <div class="architecture-flow">
+            <div class="flow-node"><i class="fa-solid fa-hard-drive"></i> IoT Physical Sensors</div>
+            <div class="flow-arrow"><i class="fa-solid fa-arrow-down"></i></div>
+            <div class="flow-node"><i class="fa-solid fa-server"></i> Flask REST API Backend</div>
+            <div class="flow-arrow"><i class="fa-solid fa-arrow-down"></i></div>
+            <div class="flow-node"><i class="fa-solid fa-desktop"></i> Responsive Web UI</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ── FOOTER ── -->
+  <footer class="footer">
+    <div>
+      Smart Parking System &nbsp;·&nbsp; Built with Python Flask &nbsp;·&nbsp; IoT-powered
+    </div>
+    <div class="footer-links">
+      <a href="#" class="footer-link" onclick="switchPage('home')">Home</a>
+      <a href="#" class="footer-link" onclick="switchPage('dashboard')">Parking Check</a>
+      <a href="#" class="footer-link" onclick="switchPage('about')">About System</a>
+    </div>
+  </footer>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
