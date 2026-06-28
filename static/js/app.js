@@ -34,7 +34,7 @@ function switchPage(pageId) {
     }
   });
 
-  // Save the current active page in localStorage
+  // Save the current active page in localStorageal
   localStorage.setItem('activePage', pageId);
 }
 
@@ -62,16 +62,16 @@ async function api(path, method = 'GET') {
 // ── Render metrics ─────────────────────────────
 function renderMetrics(stats) {
   // Update dashboard page metrics
-  document.getElementById('m-total').textContent   = stats.total;
-  document.getElementById('m-avail').textContent   = stats.available;
-  document.getElementById('m-occ').textContent     = stats.occupied;
+  document.getElementById('m-total').textContent = stats.total;
+  document.getElementById('m-avail').textContent = stats.available;
+  document.getElementById('m-occ').textContent = stats.occupied;
   document.getElementById('m-entered').textContent = stats.entered_today;
-  document.getElementById('m-exited').textContent  = stats.exited_today;
+  document.getElementById('m-exited').textContent = stats.exited_today;
 
   // Update homepage quick metrics
-  document.getElementById('qs-total').textContent   = stats.total;
-  document.getElementById('qs-avail').textContent   = stats.available;
-  document.getElementById('qs-occ').textContent     = stats.occupied;
+  document.getElementById('qs-total').textContent = stats.total;
+  document.getElementById('qs-avail').textContent = stats.available;
+  document.getElementById('qs-occ').textContent = stats.occupied;
   document.getElementById('qs-entered').textContent = stats.entered_today;
 
   const pct = stats.occupancy_pct;
@@ -82,10 +82,10 @@ function renderMetrics(stats) {
 
   // display board
   document.getElementById('dp-avail').textContent = stats.available + ' FREE';
-  document.getElementById('dp-occ').textContent   = stats.occupied  + ' TAKEN';
+  document.getElementById('dp-occ').textContent = stats.occupied + ' TAKEN';
   const statusEl = document.getElementById('dp-status');
   statusEl.textContent = stats.status;
-  statusEl.className   = 'board-status' + (stats.available === 0 ? ' full' : '');
+  statusEl.className = 'board-status' + (stats.available === 0 ? ' full' : '');
 
   drawPie(stats.available, stats.occupied);
 
@@ -106,8 +106,8 @@ function renderSlots(slots) {
   slots.forEach(slot => {
     const el = document.createElement('div');
     el.className = 'slot ' + slot.status;
-    el.id        = 'slot-' + slot.id;
-    el.title     = `Slot ${slot.id}: ${slot.status}`;
+    el.id = 'slot-' + slot.id;
+    el.title = `Slot ${slot.id}: ${slot.status}`;
     el.textContent = slot.id;
     el.onclick = () => toggleSlot(slot.id);
     grid.appendChild(el);
@@ -118,7 +118,7 @@ function renderSlots(slots) {
 function renderLog(entries) {
   const panels = [document.getElementById('log-panel'), document.getElementById('home-log-panel')];
   if (!entries || entries.length === 0) return;
-  
+
   panels.forEach(panel => {
     if (!panel) return;
     panel.innerHTML = '';
@@ -138,7 +138,7 @@ function renderLog(entries) {
 // ── Pie chart (canvas) ─────────────────────────
 function drawPie(avail, occ) {
   const canvas = document.getElementById('pieChart');
-  const ctx    = canvas.getContext('2d');
+  const ctx = canvas.getContext('2d');
   const W = canvas.width, H = canvas.height;
   const cx = W / 2, cy = H / 2, r = Math.min(W, H) / 2 - 20;
 
@@ -146,9 +146,9 @@ function drawPie(avail, occ) {
   const total = avail + occ;
   if (total === 0) return;
 
-  const data   = [avail, occ];
+  const data = [avail, occ];
   const colors = ['#10b981', '#dc2626']; // Light theme color scheme matches: Emerald & Crimson
-  let start    = -Math.PI / 2;
+  let start = -Math.PI / 2;
 
   data.forEach((val, i) => {
     const angle = (val / total) * 2 * Math.PI;
@@ -187,7 +187,7 @@ function drawPie(avail, occ) {
 
 // ── Gate animation ─────────────────────────────
 function openGate(type) {
-  const arm    = document.getElementById(type + '-arm');
+  const arm = document.getElementById(type + '-arm');
   const status = document.getElementById(type + '-status');
   if (arm.classList.contains('open')) return;
   arm.classList.add('open');
