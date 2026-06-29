@@ -34,7 +34,7 @@ function switchPage(pageId) {
     }
   });
 
-  // Save the current active page in localStorage
+  // Save the current active page in localStorageaz
   localStorage.setItem('activePage', pageId);
 }
 
